@@ -204,6 +204,7 @@
 	//TEXTURES
 	function initTexture()
 	{
+		// (SceneManager)
 		texture0 = gl.createTexture();
 		texture0.image = new Image();
 		texture0.image.onload = function()
@@ -251,7 +252,7 @@
 
         mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
         mat4.identity(mvMatrix);
-		
+		// Notons que la caméra est gérée à l'extérieur du SceneManager (avec des varriables générales) (SceneManager)
 		mat4.rotate(mvMatrix, -camHeight, [1, 0, 0]);
 		
 		mat4.translate(mvMatrix, [camX, 0.0, camZ]);
@@ -265,7 +266,8 @@
     }
 
 	function initWorldObjects()
-	{ 
+	{
+		// Ca va être la zone ou on va développer le gestionnaire de scène (SceneManager)
 		var obj = 12; 
 
 		rootObject = new triangle(null);
@@ -299,6 +301,7 @@
 		var elapsed = 0;
         if (lastTime != 0)
 		{
+			// Il devra y avoir du code aussi ici pour le Gestionnaire de Scène (SceneManager)
             elapsed = timeNow - lastTime;
 
             rTri += (90 * elapsed) / 1000.0;
