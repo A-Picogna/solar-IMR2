@@ -7,12 +7,14 @@ sphere.prototype = new worldObject;
 		this.vertexPositionBuffer = buffers[0];
 		this.vertexTextureCoordBuffer = buffers[1];
 		this.vertexIndexBuffer = buffers[2];
-		//il manque surement quelque chose pour les normales ici
+		// Ajout du buffer des normales
+		this.vertexNormalBuffer = buffers[3];
 	}
 
 	sphere.prototype.initBuffers = function()
 	{	
 		//il manque le code des normales à ajouter!
+		normals = [];
 		vertices = [];
         textureCoords = [];
 		var nbVertice = 0;
@@ -25,6 +27,7 @@ sphere.prototype = new worldObject;
 			for (var longi=0; longi <= tetaMax; longi+=pasLong)
             {
 				vertices = vertices.concat(pol2Cart(longi, lat)); //A
+				normals = vertices.concat(pol2Cart(longi, lat)); // On teste un truc
 				//il manque le code des normales à ajouter!
 				textureCoords = textureCoords.concat([longi/tetaMax, (90+lat)/(90+phiMax)]);
 				if(longi != tetaMax)
@@ -66,7 +69,12 @@ sphere.prototype = new worldObject;
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
 		vertexTextureCoordBuffer.itemSize = 2;
 		vertexTextureCoordBuffer.numItems = nbVertice;
-		
+
+		vertexNormalBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,vertexNormalBuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(normals), gl.STATIC_DRAW);
+		vertexNormalBuffer.itemSize = 1;
+		vertexNormalBuffer.numItems = vertexIndexBuffer.numItems;	
 		//il manque le code des normales à ajouter!
 		
 		return [vertexPositionBuffer, vertexTextureCoordBuffer, vertexIndexBuffer];
