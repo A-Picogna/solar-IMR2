@@ -77,5 +77,5 @@ sphere.prototype = new worldObject;
 		vertexNormalBuffer.numItems = vertexIndexBuffer.numItems;	
 		//il manque le code des normales à ajouter!
 		
-		return [vertexPositionBuffer, vertexTextureCoordBuffer, vertexIndexBuffer];
+		return [vertexPositionBuffer, vertexTextureCoordBuffer, vertexIndexBuffer, vertexNormalBuffer];
 	}

@@ -173,9 +173,18 @@
 		shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
         gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
 
+		// Ajout de l'attribut qui pourra se comporter en Array
+		shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram,"aVertexNormal");
+		gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
+		// On récupère les positions mémoires des variables du programme shader
         shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
         shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
         shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+
+		shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
+		shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightingDirection");
+		shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
     }
 	
 	function mvPushMatrix()
@@ -257,7 +266,32 @@
 		
 		mat4.translate(mvMatrix, [camX, 0.0, camZ]);
 		mat4.translate(mvMatrix, [0, 0.0, -10.0]);
-		
+
+		// Gestion de la lumière
+		couleurLumiere=[0.8, 0.8, 0.8];
+		couleurAmbiante=[0.3, 0.3, 0.3];
+		directionLumiere=[-1.0, -1.0, -1.0];
+		// Envoi du paramêtre couleurAmbiante et couleurLumiere au shader
+		gl.uniform3f(
+				shaderProgram.ambientColorUniform, // Adresse récupéré dans initShader
+				parseFloat(couleurAmbiante[0]),
+				parseFloat(couleurAmbiante[1]),
+				parseFloat(couleurAmbiante[2])
+		);
+		gl.uniform3f(
+				shaderProgram.directionalColorUniform, // Adresse récupéré dans initShader
+				parseFloat(couleurLumiere[0]),
+				parseFloat(couleurLumiere[1]),
+				parseFloat(couleurLumiere[2])
+		);
+
+		// Normalisation de la direction
+		directionLumiereNormale=vec3.create();
+		vec3.normalize(directionLumiereNormale,directionLumiere);
+		vec3.scale(directionLumiereNormale, directionLumiereNormale, -1);
+		// Envoi du second paramêtre au shader
+		gl.uniform3fv(shaderProgram.lightingDirectionUniform, directionLumiereNormale);
+
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, texture0);
 		gl.uniform1i(shaderProgram.samplerUniform, 0);
