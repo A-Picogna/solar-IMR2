@@ -14,21 +14,37 @@
     precision mediump float;
 
 	varying vec2 vTextureCoord;
+    // On récupère la variable de la lumière en ce point
+    varying vec3 vLightWeighting;
 
 	uniform sampler2D uSampler;
 
     void main(void)
 	{
-		gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+	    // On calcule la couleur de la texture
+		vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+		// Et on l'additionne avec notre couleur
+		gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
     }
 </script>
 
 <script id="shader-vs" type="x-shader/x-vertex">
     attribute vec3 aVertexPosition;
+    attribute vec3 aVertexNormal;
 	attribute vec2 aTextureCoord;
+
+    uniform vec3 uAmbientColor;
+
+    uniform vec3 uLightingDirection;
+    uniform vec3 uDirectionalColor;
 
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
+    // On ajoute la matrice des normales (?!)
+    uniform mat3 uNMatrix;
+
+    // Parametre qui va etre renvoye au fragment : luminosité en un point
+    varying vec3 vLightWeighting;
 
 	varying vec2 vTextureCoord;
 
@@ -36,6 +52,16 @@
 	{
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 		vTextureCoord = aTextureCoord;
+
+		//////
+		// Calcul de la lumiere
+		/// On recupere la normale
+		vec3 transformedNormal = uNMatrix * aVertexNormal;
+		// On calcule le rayon entre la normale et la lumiere
+        float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+        // On multiplie le résultat avec la couleur et on ajouter la couleur ambiante
+        vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+
     }
 </script>
 
@@ -182,6 +208,9 @@
         shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
         shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
 
+        // Ajout des normales
+        shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+
 		shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
 		shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightingDirection");
 		shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
@@ -207,6 +236,13 @@
 	{
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+
+        // On passe aussi une matrice de transformation des normales
+        var normalMatrix = mat3.create();
+        mat4.toInverseMat3(mvMatrix, normalMatrix);
+        mat3.transpose(normalMatrix);
+        gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
+        //////////////
     }
 	
 	
@@ -267,9 +303,11 @@
 		mat4.translate(mvMatrix, [camX, 0.0, camZ]);
 		mat4.translate(mvMatrix, [0, 0.0, -10.0]);
 
+        //////////////
 		// Gestion de la lumière
-		couleurLumiere=[0.8, 0.8, 0.8];
-		couleurAmbiante=[0.3, 0.3, 0.3];
+        //////////////
+		couleurLumiere=[0.9, 0.9, 0.9];
+		couleurAmbiante=[0.1, 0.1, 0.2];
 		directionLumiere=[-1.0, -1.0, -1.0];
 		// Envoi du paramêtre couleurAmbiante et couleurLumiere au shader
 		gl.uniform3f(
@@ -287,10 +325,12 @@
 
 		// Normalisation de la direction
 		directionLumiereNormale=vec3.create();
-		vec3.normalize(directionLumiereNormale,directionLumiere);
-		vec3.scale(directionLumiereNormale, directionLumiereNormale, -1);
-		// Envoi du second paramêtre au shader
+		vec3.normalize(directionLumiere,directionLumiereNormale);
+		vec3.scale(directionLumiereNormale, -1);
+		// Envoi du second parametre au shader
 		gl.uniform3fv(shaderProgram.lightingDirectionUniform, directionLumiereNormale);
+
+        // Code déplacé dans setUniforms
 
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, texture0);
@@ -306,15 +346,15 @@
 
 		rootObject = new triangle(null);
 		rootObject.translate([0,-1,0.5]);
-		objects.push(rootObject); 
+		objects.push(rootObject);
 		
 		for (var i=0; i < obj; i++)
-		{ 
+		{
 			var newObject = new triangle(rootObject);
 			objects.push(newObject);
-			newObject.rotate(-i*Math.PI/12, [0,0,1])
-			newObject.translate([2,0,i/100])
-			newObject.scale([1-i/12,1-i/12,1-i/12])
+			newObject.rotate(-i*Math.PI/12, [0,0,1]);
+		    newObject.translate([2,0,i/100]);
+            newObject.scale([1-i/12,1-i/12,1-i/12]);
 		}
 		
 		var newObject = new square(rootObject);
