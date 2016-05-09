@@ -4,6 +4,7 @@ function square(parent)
 		this.base (parent);
 		this.vertexPositionBuffer = this.initVertexPositionBuffer();
 		this.vertexTextureCoordBuffer = this.initTextureCoordPositionBuffer();
+		this.vertexNormalBuffer = this.initVertexNormalBuffer();
 	}
 	square.prototype= new worldObject;
 	square.prototype.initVertexPositionBuffer = function()
@@ -37,4 +38,20 @@ function square(parent)
 		vertexTextureCoordBuffer.itemSize = 2;
         vertexTextureCoordBuffer.numItems = 6;
 		return vertexTextureCoordBuffer;
+	}
+	square.prototype.initVertexNormalBuffer = function()
+	{
+		var normals = [
+			0.0,  0.0,  1.0,
+			0.0,  0.0,  1.0,
+			0.0,  0.0,  1.0,
+			0.0,  0.0,  1.0,
+			0.0,  0.0,  1.0,
+			0.0,  0.0,  1.0];
+		vertexNormalBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+		vertexNormalBuffer.itemSize = 3;
+		vertexNormalBuffer.numItems = 6;
+		return vertexNormalBuffer;
 	}

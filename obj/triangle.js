@@ -6,6 +6,7 @@ function triangle(parent)
 	this.base (parent);
 	this.vertexPositionBuffer = this.initVertexPositionBuffer();
 	this.vertexTextureCoordBuffer = this.initTextureCoordPositionBuffer();
+	this.vertexNormalBuffer = this.initVertexNormalBuffer();
 }
 triangle.prototype.initVertexPositionBuffer = function()
 {
@@ -32,4 +33,17 @@ triangle.prototype.initTextureCoordPositionBuffer = function()
 	vertexTextureCoordBuffer.itemSize = 2;
 	vertexTextureCoordBuffer.numItems = 3;
 	return vertexTextureCoordBuffer;
+}
+triangle.prototype.initVertexNormalBuffer = function()
+{
+	var normals = [
+		0.0,  0.0,  1.0,
+		0.0,  0.0,  1.0,
+		0.0,  0.0,  1.0];
+	vertexNormalBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+	vertexNormalBuffer.itemSize = 3;
+	vertexNormalBuffer.numItems = 3;
+	return vertexNormalBuffer;
 }
