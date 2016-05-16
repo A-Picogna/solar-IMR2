@@ -35,32 +35,39 @@
 
     uniform vec3 uAmbientColor;
 
-    uniform vec3 uLightingDirection;
-    uniform vec3 uDirectionalColor;
+    uniform vec3 uLightLocation;
+    uniform vec3 uLightColor;
 
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
-    // On ajoute la matrice des normales (?!)
+    // On ajoute la matrice des normales
     uniform mat3 uNMatrix;
 
-    // Parametre qui va etre renvoye au fragment : luminosité en un point
+    // Paramètre qui va etre renvoye au fragment : luminosité en un point
     varying vec3 vLightWeighting;
-
+	// Coordonnées de la texture
 	varying vec2 vTextureCoord;
 
     void main(void)
 	{
+		// Calcul de la position 3D du vertex
+		vec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+        // Calcul de la position 2D projetée du vertex
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		// Calcul de la position de la texture
 		vTextureCoord = aTextureCoord;
 
 		//////
 		// Calcul de la lumiere
 		/// On recupere la normale
 		vec3 transformedNormal = uNMatrix * aVertexNormal;
-		// On calcule le rayon entre la normale et la lumiere
-        float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+		// On calcule la direction du rayon et on la normalise
+		vec3 lightDirection = normalize(uLightLocation - mvPosition.xyz);
+
+		// On calcule le rayon entre la normale et la direction de la lumière
+        float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);
         // On multiplie le résultat avec la couleur et on ajouter la couleur ambiante
-        vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+        vLightWeighting = uAmbientColor + uLightColor * directionalLightWeighting;
 
     }
 </script>
@@ -212,8 +219,8 @@
         shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
 
 		shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
-		shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightingDirection");
-		shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
+		shaderProgram.lightingLocationUniform = gl.getUniformLocation(shaderProgram, "uLightLocation");
+		shaderProgram.lightColorUniform = gl.getUniformLocation(shaderProgram, "uLightColor");
     }
 	
 	function mvPushMatrix()
@@ -308,7 +315,7 @@
         //////////////
 		couleurLumiere=[0.9, 0.9, 0.9];
 		couleurAmbiante=[0.1, 0.1, 0.2];
-		directionLumiere=[-1.0, -1.0, -1.0];
+		positionLumiere=[0.0, 0.0, 0.0];
 		// Envoi du paramêtre couleurAmbiante et couleurLumiere au shader
 		gl.uniform3f(
 				shaderProgram.ambientColorUniform, // Adresse récupéré dans initShader
@@ -317,21 +324,16 @@
 				parseFloat(couleurAmbiante[2])
 		);
 		gl.uniform3f(
-				shaderProgram.directionalColorUniform, // Adresse récupéré dans initShader
+				shaderProgram.lightColorUniform, // Adresse récupéré dans initShader
 				parseFloat(couleurLumiere[0]),
 				parseFloat(couleurLumiere[1]),
 				parseFloat(couleurLumiere[2])
 		);
 
-		// Normalisation de la direction
-		directionLumiereNormale=vec3.create();
-		vec3.normalize(directionLumiere,directionLumiereNormale);
-		vec3.scale(directionLumiereNormale, -1);
-		// Envoi du second parametre au shader
-		gl.uniform3fv(shaderProgram.lightingDirectionUniform, directionLumiereNormale);
+		// Envoi de du point au Shader
+		gl.uniform3fv(shaderProgram.lightingLocationUniform, positionLumiere);
 
         // Code déplacé dans setUniforms
-
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, texture0);
 		gl.uniform1i(shaderProgram.samplerUniform, 0);
