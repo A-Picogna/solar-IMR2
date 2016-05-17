@@ -1,5 +1,5 @@
 <html><head>
-<title>Apprendre WebGL — leçon 3</title>
+<title>Système Solaire - IMR2 - APicogna/ATostivint</title>
 <meta http-equiv="content-type" content="text/html; charset=windows-1252">
 
 <script type="text/javascript" src="libs/glMatrix-0.9.5.min.js"></script>
@@ -8,6 +8,7 @@
 <script type="text/javascript" src="obj/sphere.js"></script>
 <script type="text/javascript" src="obj/triangle.js"></script>
 <script type="text/javascript" src="obj/square.js"></script>
+<script type="text/javascript" src="obj/scene.js"></script>
 
 
 <script id="shader-fs" type="x-shader/x-fragment">
@@ -90,7 +91,7 @@
 	
 	var userRotationMatrix = mat4.create();
   	mat4.identity(userRotationMatrix);
-	
+
 	var rTri = 0;
     var rSquare = 0;
 	var rSphere = 0;
@@ -111,7 +112,6 @@
 
 	//world
 	var objects = [];
-	var rootObject;
 	
 	//geometry
 	var pasLat = 3;
@@ -251,37 +251,7 @@
         gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
         //////////////
     }
-	
-	
-	//TEXTURES
-	function initTexture()
-	{
-		// (SceneManager)
-		texture0 = gl.createTexture();
-		texture0.image = new Image();
-		texture0.image.onload = function()
-		{
-		  handleLoadedTexture(texture0)
-		}
 
-    texture0.image.src = "./img/moon.gif"; // note : croos origin problem with chrome outside webserver
-	texture0.image.src = "./img/earth.jpg"; // note : croos origin problem with chrome outside webserver
-  }
-
-	function handleLoadedTexture(texture)
-	{
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		gl.bindTexture(gl.TEXTURE_2D, texture0);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-		gl.generateMipmap(gl.TEXTURE_2D);
-		gl.bindTexture(gl.TEXTURE_2D, null);
-	}
-
-
-	//INITGL
-	
     function degToRad(degrees)
 	{
         return degrees * Math.PI / 180;
@@ -295,80 +265,6 @@
 			Math.sin(degToRad(lat)),
 			Math.cos(degToRad(lat))*Math.cos(degToRad(longi))
 		];
-	}
-
-    function drawScene()
-	{
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-        mat4.identity(mvMatrix);
-		// Notons que la caméra est gérée à l'extérieur du SceneManager (avec des varriables générales) (SceneManager)
-		mat4.rotate(mvMatrix, -camHeight, [1, 0, 0]);
-		
-		mat4.translate(mvMatrix, [camX, 0.0, camZ]);
-		mat4.translate(mvMatrix, [0, 0.0, -10.0]);
-
-        //////////////
-		// Gestion de la lumière
-        //////////////
-		couleurLumiere=[0.9, 0.9, 0.9];
-		couleurAmbiante=[0.1, 0.1, 0.2];
-		positionLumiere=[0.0, 0.0, 0.0];
-		// Envoi du paramêtre couleurAmbiante et couleurLumiere au shader
-		gl.uniform3f(
-				shaderProgram.ambientColorUniform, // Adresse récupéré dans initShader
-				parseFloat(couleurAmbiante[0]),
-				parseFloat(couleurAmbiante[1]),
-				parseFloat(couleurAmbiante[2])
-		);
-		gl.uniform3f(
-				shaderProgram.lightColorUniform, // Adresse récupéré dans initShader
-				parseFloat(couleurLumiere[0]),
-				parseFloat(couleurLumiere[1]),
-				parseFloat(couleurLumiere[2])
-		);
-
-		// Envoi de du point au Shader
-		gl.uniform3fv(shaderProgram.lightingLocationUniform, positionLumiere);
-
-        // Code déplacé dans setUniforms
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, texture0);
-		gl.uniform1i(shaderProgram.samplerUniform, 0);
-
-		rootObject.draw();
-    }
-
-	function initWorldObjects()
-	{
-		// Ca va être la zone ou on va développer le gestionnaire de scène (SceneManager)
-		var obj = 12; 
-
-		rootObject = new triangle(null);
-		rootObject.translate([0,-1,0.5]);
-		objects.push(rootObject);
-		
-		for (var i=0; i < obj; i++)
-		{
-			var newObject = new triangle(rootObject);
-			objects.push(newObject);
-			newObject.rotate(-i*Math.PI/12, [0,0,1]);
-		    newObject.translate([2,0,i/100]);
-            newObject.scale([1-i/12,1-i/12,1-i/12]);
-		}
-		
-		var newObject = new square(rootObject);
-		objects.push(newObject);
-		newObject.translate([0,2,0]);
-		
-		newObject = new sphere(rootObject);
-		objects.push(newObject);
-		newObject.translate([2,2,0]);
-		
-		
-		return rootObject;
 	}
 	
     function animate()
@@ -384,7 +280,7 @@
             rSquare += (75 * elapsed) / 1000.0;
 			rSphere += (50 * elapsed) / 1000.0;
         }
-		rootObject.animate(elapsed);
+		soleil.animate(elapsed);
 		lastTime = timeNow;
     }
 
@@ -400,9 +296,9 @@
 
 		//webGL
         initGL(canvas);
-        initShaders()
-		rootObject = initWorldObjects();
+        initShaders();
 		initTexture();
+		soleil = initWorldObjects();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
