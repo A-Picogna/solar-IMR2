@@ -11,7 +11,7 @@ sphere.prototype = new worldObject;
 	}
 
 	sphere.prototype.initBuffers = function()
-	{	
+	{
 		//il manque le code des normales à ajouter!
 		normals = [];
 		vertices = [];
@@ -27,8 +27,8 @@ sphere.prototype = new worldObject;
 		{
 			for (var longi=0; longi <= tetaMax; longi+=pasLong)
             {
-				vertices = vertices.concat(pol2Cart(longi, lat)); 
-				normals = normals.concat(pol2Cart(longi, lat)); 
+				vertices = vertices.concat(pol2Cart(longi, lat));
+				normals = normals.concat(pol2Cart(longi, lat));
 				textureCoords = textureCoords.concat([longi/tetaMax, (90+lat)/(90+phiMax)]);
 				if(longi != tetaMax)
 				{
@@ -51,7 +51,7 @@ sphere.prototype = new worldObject;
 			}
 			resLat++;
         }
-		
+
 		vertexPositionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);

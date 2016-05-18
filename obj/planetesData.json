@@ -1,0 +1,62 @@
+{
+  "soleil": {
+    "demiGrandAxe": 0,
+    "periodeDeRevolution": 0,
+    "periodeDeRotation": 25,
+    "diametreEquatorial": 1391000
+  },
+  "mercure": {
+    "demiGrandAxe": 0.357,
+    "periodeDeRevolution": 87.97,
+    "periodeDeRotation": 59,
+    "diametreEquatorial": 4880
+  },
+  "venus": {
+    "demiGrandAxe": 0.723,
+    "periodeDeRevolution": 224.7,
+    "periodeDeRotation": 243,
+    "diametreEquatorial": 12100
+  },
+  "terre": {
+    "demiGrandAxe": 1,
+    "periodeDeRevolution": 365.26,
+    "periodeDeRotation": 1,
+    "diametreEquatorial": 12756
+  },
+  "lune": {
+    "demiGrandAxe": 0.00257,
+    "periodeDeRevolution": 27.322,
+    "periodeDeRotation": 27.322,
+    "diametreEquatorial": 3474
+  },
+  "mars": {
+    "demiGrandAxe": 1.524,
+    "periodeDeRevolution": 686.98,
+    "periodeDeRotation": 1,
+    "diametreEquatorial": 6792
+  },
+  "jupiter": {
+    "demiGrandAxe": 5.203,
+    "periodeDeRevolution": 4332.7,
+    "periodeDeRotation": 0.375,
+    "diametreEquatorial": 142984
+  },
+  "saturne": {
+    "demiGrandAxe": 9.050,
+    "periodeDeRevolution": 10759.5,
+    "periodeDeRotation": 0.417,
+    "diametreEquatorial": 120536
+  },
+  "uranus": {
+    "demiGrandAxe": 19.218,
+    "periodeDeRevolution": 30685,
+    "periodeDeRotation": 0.667,
+    "diametreEquatorial": 51118
+  },
+  "neptune": {
+    "demiGrandAxe": 30.11,
+    "periodeDeRevolution": 30190,
+    "periodeDeRotation": 0.75,
+    "diametreEquatorial": 49532
+  }
+}

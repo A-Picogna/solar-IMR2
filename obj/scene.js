@@ -5,12 +5,40 @@
 var textureTerre;
 var textureSoleil;
 var textureLune;
+var textureMercure;
+var textureVenus;
+var textureMars;
+var textureJupiter;
+var textureSaturne;
+var textureUranus;
+var textureNeptune;
 
 var soleil;
+
+var planetesData;
+
+function getJsonData(url){
+    var resGetJson = null;
+    $.ajaxSetup({
+        async: false
+    });
+    $.getJSON(url, function(data) {
+        resGetJson = data;
+    });
+    $.ajaxSetup({
+        async: true
+    });
+    return resGetJson;
+}
 
 function initWorldObjects()
 {
     // Ca va être la zone ou on va développer le gestionnaire de scène (SceneManager)
+    var resizeValue; // on redimenssione les astres pour garder une certaine proportionnalité sans être vraiment à l"échelle
+    var translateValue; // la distance est aussi redécrite avec les distance réèles, mais on triche un peu pour éviter que les planetes gazeuses ne soient trop loin
+    var terreTranslateValue = 20; // valeur de translation de la terre, valeur de référence
+
+    planetesData = getJsonData("./obj/planetesData.json");
 
     soleil = new sphere(null, -1);
     soleil.texture = textureSoleil;
@@ -18,15 +46,80 @@ function initWorldObjects()
 
     terre = new sphere(soleil);
     terre.texture = textureTerre;
-    terre.scale([0.75, 0.75, 0.75]);
-    terre.translate([5, 0, 0]);
+    resizeValue = Math.pow( (planetesData.terre.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
+    terre.scale([resizeValue, resizeValue, resizeValue]);
+    terre.translate([terreTranslateValue, 0, 0]);
     objects.push(terre);
 
     lune = new sphere(terre);
     lune.texture = textureLune;
-    lune.scale([0.5, 0.5, 0.5]);
+    resizeValue = Math.pow( (planetesData.lune.diametreEquatorial/planetesData.terre.diametreEquatorial) , 1/2);
+    lune.scale([resizeValue, resizeValue, resizeValue]);
     lune.translate([5,0,0]);
     objects.push(lune);
+
+    // PLANETES TELLURIQUES
+
+    mercure = new sphere(soleil);
+    mercure.texture = textureMercure;
+    resizeValue = Math.pow( (planetesData.mercure.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
+    mercure.scale([resizeValue, resizeValue, resizeValue]);
+    translateValue = Math.pow( (planetesData.mercure.demiGrandAxe) , 1/1) * terreTranslateValue;
+    mercure.translate([translateValue,0,0]);
+    objects.push(mercure);
+
+    venus = new sphere(soleil);
+    venus.texture = textureVenus;
+    resizeValue = Math.pow( (planetesData.venus.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
+    venus.scale([resizeValue, resizeValue, resizeValue]);
+    translateValue = Math.pow( (planetesData.venus.demiGrandAxe) , 1/1) * terreTranslateValue;
+    venus.translate([translateValue,0,0]);
+    objects.push(venus);
+
+    mars = new sphere(soleil);
+    mars.texture = textureMars;
+    resizeValue = Math.pow( (planetesData.mars.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
+    mars.scale([resizeValue, resizeValue, resizeValue]);
+    translateValue = Math.pow( (planetesData.mars.demiGrandAxe) , 1/1) * terreTranslateValue;
+    console.log(translateValue);
+    mars.translate([translateValue,0,0]);
+    objects.push(mars);
+
+    // PLANETES GAZEUSES
+
+    jupiter = new sphere(soleil);
+    jupiter.texture = textureJupiter;
+    resizeValue = Math.pow( (planetesData.jupiter.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
+    jupiter.scale([resizeValue, resizeValue, resizeValue]);
+    translateValue = Math.pow( (planetesData.jupiter.demiGrandAxe) , 1/3) * terreTranslateValue;
+    jupiter.translate([translateValue,0,0]);
+    objects.push(jupiter);
+
+    saturne = new sphere(soleil);
+    saturne.texture = textureSaturne;
+    resizeValue = Math.pow( (planetesData.saturne.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
+    saturne.scale([resizeValue, resizeValue, resizeValue]);
+    translateValue = Math.pow( (planetesData.saturne.demiGrandAxe) , 1/3) * terreTranslateValue;
+    saturne.translate([translateValue,0,0]);
+    objects.push(saturne);
+
+
+    uranus = new sphere(soleil);
+    uranus.texture = textureUranus;
+    resizeValue = Math.pow( (planetesData.uranus.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
+    uranus.scale([resizeValue, resizeValue, resizeValue]);
+    translateValue = Math.pow( (planetesData.uranus.demiGrandAxe) , 1/3) * terreTranslateValue;
+    uranus.translate([translateValue,0,0]);
+    objects.push(uranus);
+
+    neptune = new sphere(soleil);
+    neptune.texture = textureNeptune;
+    resizeValue = Math.pow( (planetesData.neptune.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
+    neptune.scale([resizeValue, resizeValue, resizeValue]);
+    translateValue = Math.pow( (planetesData.neptune.demiGrandAxe) , 1/3) * terreTranslateValue;
+    neptune.translate([translateValue,0,0]);
+    objects.push(neptune);
+
 
     return soleil;
 }
@@ -41,7 +134,7 @@ function initTexture()
     {
         handleLoadedTexture(texture0)
     }
-    texture0.image.src = "./img/earth.jpg"; // note : croos origin problem with chrome outside webserver
+    texture0.image.src = "./img/earth.jpg";
 
     textureTerre = gl.createTexture();
     textureTerre.image = new Image();
@@ -49,7 +142,7 @@ function initTexture()
     {
         handleLoadedTexture(textureTerre)
     }
-    textureTerre.image.src = "./img/earth.jpg"; // note : croos origin problem with chrome outside webserver
+    textureTerre.image.src = "./img/earth.jpg";
 
     textureSoleil = gl.createTexture();
     textureSoleil.image = new Image();
@@ -57,7 +150,7 @@ function initTexture()
     {
         handleLoadedTexture(textureSoleil)
     }
-    textureSoleil.image.src = "./img/sun.jpg"; // note : croos origin problem with chrome outside webserver
+    textureSoleil.image.src = "./img/sun.jpg";
 
     textureLune = gl.createTexture();
     textureLune.image = new Image();
@@ -65,7 +158,65 @@ function initTexture()
     {
         handleLoadedTexture(textureLune)
     }
-    textureLune.image.src = "./img/moon.gif"; // note : croos origin problem with chrome outside webserver
+    textureLune.image.src = "./img/moon.gif";
+
+    textureMercure = gl.createTexture();
+    textureMercure.image = new Image();
+    textureMercure.image.onload = function()
+    {
+        handleLoadedTexture(textureMercure)
+    }
+    textureMercure.image.src = "./img/mercure.jpg";
+
+    textureVenus = gl.createTexture();
+    textureVenus.image = new Image();
+    textureVenus.image.onload = function()
+    {
+        handleLoadedTexture(textureVenus)
+    }
+    textureVenus.image.src = "./img/venus.jpg";
+
+    textureMars = gl.createTexture();
+    textureMars.image = new Image();
+    textureMars.image.onload = function()
+    {
+        handleLoadedTexture(textureMars)
+    }
+    textureMars.image.src = "./img/mars.jpg";
+
+    textureJupiter = gl.createTexture();
+    textureJupiter.image = new Image();
+    textureJupiter.image.onload = function()
+    {
+        handleLoadedTexture(textureJupiter)
+    }
+    textureJupiter.image.src = "./img/jupiter.jpg";
+
+    textureSaturne = gl.createTexture();
+    textureSaturne.image = new Image();
+    textureSaturne.image.onload = function()
+    {
+        handleLoadedTexture(textureSaturne)
+    }
+    textureSaturne.image.src = "./img/saturn.png";
+
+
+    textureUranus = gl.createTexture();
+    textureUranus.image = new Image();
+    textureUranus.image.onload = function()
+    {
+        handleLoadedTexture(textureUranus)
+    }
+    textureUranus.image.src = "./img/uranus.jpg";
+
+    textureNeptune = gl.createTexture();
+    textureNeptune.image = new Image();
+    textureNeptune.image.onload = function()
+    {
+        handleLoadedTexture(textureNeptune)
+    }
+    textureNeptune.image.src = "./img/neptune.jpg";
+
 }
 
 function drawScene()

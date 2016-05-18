@@ -40,7 +40,8 @@ worldObject.prototype.draw = function()
 	{
 		if(this.texture != null)
 		{
-			gl.activeTexture(this.texture.getbind());
+			//gl.activeTexture(this.texture.getbind());
+			gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, this.texture);
 			gl.uniform1i(shaderProgram.samplerUniform, this.texture.bindNumber);
 		}
