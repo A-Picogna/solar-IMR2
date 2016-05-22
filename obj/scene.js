@@ -48,13 +48,13 @@ function initWorldObjects()
 
     soleil = new sphere(null, -1);
     soleil.texture = textureSoleil;
-    soleil.vitesseRotation = refVitesseRotation/planetesData.soleil.periodeDeRotation ;
+    soleil.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.soleil.periodeDeRotation);
     objects.push(soleil);
 
     terre = new sphere(soleil);
     terre.texture = textureTerre;
-    soleil.vitesseRotation = refVitesseRotation;
-    soleil.vitesseRevolution = refVitesseRevolution;
+    terre.vitesseRotation = refVitesseRotation;
+    terre.vitesseRevolution = refVitesseRevolution;
     resizeValue = Math.pow( (planetesData.terre.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     terre.scale([resizeValue, resizeValue, resizeValue]);
     terre.translate([terreTranslateValue, 0, 0]);
@@ -100,7 +100,6 @@ function initWorldObjects()
     resizeValue = Math.pow( (planetesData.mars.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     mars.scale([resizeValue, resizeValue, resizeValue]);
     translateValue = Math.pow( (planetesData.mars.demiGrandAxe) , 1/1) * terreTranslateValue;
-    console.log(translateValue);
     mars.translate([translateValue,0,0]);
     objects.push(mars);
 
