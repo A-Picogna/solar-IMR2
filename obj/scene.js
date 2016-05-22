@@ -39,13 +39,22 @@ function initWorldObjects()
     var terreTranslateValue = 20; // valeur de translation de la terre, valeur de référence
 
     planetesData = getJsonData("./obj/planetesData.json");
+    var refVitesseRevolution = 0.0001; // ce sera la vitesse de revolution de la terre en 365.36 jours, on calcule donc les autres vitesse proportionellement
+    var refVitesseRotation = 0.01 // ce sera la vitesse de rotation de la terre en 1 jour, on calcule le reste proportionnelement
+
+    /* On admet que la vitesse de révolution et rotation sont indépendantes pour la démonstration
+    dans l'idéal d'un modèle proportionnel, la vitesse de revolution devrait directement dépendre de la vitesse de rotation
+     */
 
     soleil = new sphere(null, -1);
     soleil.texture = textureSoleil;
+    soleil.vitesseRotation = refVitesseRotation/planetesData.soleil.periodeDeRotation ;
     objects.push(soleil);
 
     terre = new sphere(soleil);
     terre.texture = textureTerre;
+    soleil.vitesseRotation = refVitesseRotation;
+    soleil.vitesseRevolution = refVitesseRevolution;
     resizeValue = Math.pow( (planetesData.terre.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     terre.scale([resizeValue, resizeValue, resizeValue]);
     terre.translate([terreTranslateValue, 0, 0]);
@@ -53,6 +62,8 @@ function initWorldObjects()
 
     lune = new sphere(terre);
     lune.texture = textureLune;
+    lune.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.lune.periodeDeRotation);
+    lune.vitesseRevolution = refVitesseRevolution*(planetesData.terre.periodeDeRevolution/planetesData.lune.periodeDeRevolution);
     resizeValue = Math.pow( (planetesData.lune.diametreEquatorial/planetesData.terre.diametreEquatorial) , 1/2);
     lune.scale([resizeValue, resizeValue, resizeValue]);
     lune.translate([5,0,0]);
@@ -62,6 +73,8 @@ function initWorldObjects()
 
     mercure = new sphere(soleil);
     mercure.texture = textureMercure;
+    mercure.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.mercure.periodeDeRotation);
+    mercure.vitesseRevolution = refVitesseRevolution*(planetesData.terre.periodeDeRevolution/planetesData.mercure.periodeDeRevolution);
     resizeValue = Math.pow( (planetesData.mercure.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     mercure.scale([resizeValue, resizeValue, resizeValue]);
     translateValue = Math.pow( (planetesData.mercure.demiGrandAxe) , 1/1) * terreTranslateValue;
@@ -70,6 +83,10 @@ function initWorldObjects()
 
     venus = new sphere(soleil);
     venus.texture = textureVenus;
+    venus.sensDeRotation = -1; // venus est la seule planete du systeme solaire à tournée dans le sens inverse des autres.
+    // pour observer le sens inverse de rotation de venus, il faut mettre une vitesse de révolution très lente, par exemple 0.000001 et augmenter la vitesse de rotation, par exemple 0.1
+    venus.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.venus.periodeDeRotation);
+    venus.vitesseRevolution = refVitesseRevolution*(planetesData.terre.periodeDeRevolution/planetesData.venus.periodeDeRevolution);
     resizeValue = Math.pow( (planetesData.venus.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     venus.scale([resizeValue, resizeValue, resizeValue]);
     translateValue = Math.pow( (planetesData.venus.demiGrandAxe) , 1/1) * terreTranslateValue;
@@ -78,6 +95,8 @@ function initWorldObjects()
 
     mars = new sphere(soleil);
     mars.texture = textureMars;
+    mars.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.mars.periodeDeRotation);
+    mars.vitesseRevolution = refVitesseRevolution*(planetesData.terre.periodeDeRevolution/planetesData.mars.periodeDeRevolution);
     resizeValue = Math.pow( (planetesData.mars.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     mars.scale([resizeValue, resizeValue, resizeValue]);
     translateValue = Math.pow( (planetesData.mars.demiGrandAxe) , 1/1) * terreTranslateValue;
@@ -89,6 +108,8 @@ function initWorldObjects()
 
     jupiter = new sphere(soleil);
     jupiter.texture = textureJupiter;
+    jupiter.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.jupiter.periodeDeRotation);
+    jupiter.vitesseRevolution = refVitesseRevolution*(planetesData.terre.periodeDeRevolution/planetesData.jupiter.periodeDeRevolution);
     resizeValue = Math.pow( (planetesData.jupiter.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     jupiter.scale([resizeValue, resizeValue, resizeValue]);
     translateValue = Math.pow( (planetesData.jupiter.demiGrandAxe) , 1/3) * terreTranslateValue;
@@ -97,6 +118,8 @@ function initWorldObjects()
 
     saturne = new sphere(soleil);
     saturne.texture = textureSaturne;
+    saturne.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.saturne.periodeDeRotation);
+    saturne.vitesseRevolution = refVitesseRevolution*(planetesData.terre.periodeDeRevolution/planetesData.saturne.periodeDeRevolution);
     resizeValue = Math.pow( (planetesData.saturne.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     saturne.scale([resizeValue, resizeValue, resizeValue]);
     translateValue = Math.pow( (planetesData.saturne.demiGrandAxe) , 1/3) * terreTranslateValue;
@@ -106,6 +129,8 @@ function initWorldObjects()
 
     uranus = new sphere(soleil);
     uranus.texture = textureUranus;
+    uranus.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.uranus.periodeDeRotation);
+    uranus.vitesseRevolution = refVitesseRevolution*(planetesData.terre.periodeDeRevolution/planetesData.uranus.periodeDeRevolution);
     resizeValue = Math.pow( (planetesData.uranus.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     uranus.scale([resizeValue, resizeValue, resizeValue]);
     translateValue = Math.pow( (planetesData.uranus.demiGrandAxe) , 1/3) * terreTranslateValue;
@@ -114,6 +139,8 @@ function initWorldObjects()
 
     neptune = new sphere(soleil);
     neptune.texture = textureNeptune;
+    neptune.vitesseRotation = refVitesseRotation*(planetesData.terre.periodeDeRotation/planetesData.neptune.periodeDeRotation);
+    neptune.vitesseRevolution = refVitesseRevolution*(planetesData.terre.periodeDeRevolution/planetesData.neptune.periodeDeRevolution);
     resizeValue = Math.pow( (planetesData.neptune.diametreEquatorial/planetesData.soleil.diametreEquatorial) , 1/10);
     neptune.scale([resizeValue, resizeValue, resizeValue]);
     translateValue = Math.pow( (planetesData.neptune.demiGrandAxe) , 1/3) * terreTranslateValue;

@@ -3,8 +3,6 @@
 function worldObject(parent)
 {
     this.localTransformation = mat4.create();
-    this.revolutionTransformation = mat4.create();
-    this.rotationTransformation = mat4.create();
     this.children = [];
     this.vertexPositionBuffer = null;
     this.vertexTextureCoordBuffer = null;
@@ -12,12 +10,7 @@ function worldObject(parent)
     this.toggled = true;
     this.vertexNormalBuffer = null;
     this.texture = null;
-    this.vitesseRevolution = 0.0001;
-    this.vitesseRotation = 0.001;
-    this.sensDeRotation = 1;
     mat4.identity(this.localTransformation);
-    mat4.identity(this.revolutionTransformation);
-    mat4.identity(this.rotationTransformation);
     if(parent != null) parent.addChild(this);
 }
 
@@ -31,13 +24,10 @@ worldObject.prototype.translate = function(translation)
     mat4.translate(this.localTransformation, translation);
 }
 
-worldObject.prototype.orbite = function (rotation, axis) {
-    mat4.rotate(this.revolutionTransformation, rotation, axis);
-};
-
-worldObject.prototype.rotation = function (rotation, axis) {
-    mat4.rotate(this.rotationTransformation, rotation, axis);
-};
+worldObject.prototype.rotate = function(rotation, axis)
+{
+    mat4.rotate(this.localTransformation, rotation, axis);
+}
 
 worldObject.prototype.scale = function(scale)
 {
@@ -56,12 +46,8 @@ worldObject.prototype.draw = function()
             gl.uniform1i(shaderProgram.samplerUniform, this.texture.bindNumber);
         }
 
-        //on utilise les push matrix pour les rotations des planètes à des vitesss différentes
         mvPushMatrix();
-        mat4.multiply(mvMatrix, this.revolutionTransformation); // gère la revolution autour du soleil
-        mat4.multiply(mvMatrix, this.localTransformation); // gere la translation par rapport au soleil
-        mvPushMatrix();
-        mat4.multiply(mvMatrix, this.rotationTransformation); // gere la roation de l'astre sur lui même
+        mat4.multiply(mvMatrix, this.localTransformation);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -86,8 +72,6 @@ worldObject.prototype.draw = function()
             gl.drawElements(drawStyle, this.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
 
-        mvPopMatrix();
-
         //draws children
         for(var i =0; i< this.children.length; i++)
         {
@@ -104,6 +88,5 @@ worldObject.prototype.animate = function(elapsedTime)
     {
         this.children[i].animate(elapsedTime);
     }
-    this.orbite(this.vitesseRevolution * elapsedTime, [0, 1, 0]);
-    this.rotation(this.vitesseRotation * elapsedTime, [0, this.sensDeRotation, 0]);
+    this.rotate(0.001*elapsedTime,[0,1,0]); // cette ligne est surement discutable comme animation par défaut!
 }
