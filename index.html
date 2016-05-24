@@ -257,13 +257,21 @@
     }
 
 
-	function pol2Cart(longi, lat, resLongi, resLat)
+	function pol2Cart(longi, lat, isASun, resLongi, resLat)
 	{
-		return [
-			Math.cos(degToRad(lat))*Math.sin(degToRad(longi)),
-			Math.sin(degToRad(lat)),
-			Math.cos(degToRad(lat))*Math.cos(degToRad(longi))
-		];
+		if (isASun == -1){
+			return [
+				-Math.cos(degToRad(lat))*Math.sin(degToRad(longi)),
+				-Math.sin(degToRad(lat)),
+				-Math.cos(degToRad(lat))*Math.cos(degToRad(longi))
+			];
+		} else {
+			return [
+				Math.cos(degToRad(lat))*Math.sin(degToRad(longi)),
+				Math.sin(degToRad(lat)),
+				Math.cos(degToRad(lat))*Math.cos(degToRad(longi))
+			];
+		}
 	}
 	
     function animate()

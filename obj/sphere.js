@@ -1,16 +1,17 @@
 sphere.prototype = new worldObject;
-	function sphere(parent)
+	function sphere(parent, isASun)
 	{
+		isASun = isASun || 0;
 		this.base = worldObject;
 		this.base(parent);
-		var buffers = this.initBuffers();
+		var buffers = this.initBuffers(isASun);
 		this.vertexPositionBuffer = buffers[0];
 		this.vertexTextureCoordBuffer = buffers[1];
 		this.vertexIndexBuffer = buffers[2];
 		this.vertexNormalBuffer = buffers[3];
 	}
 
-	sphere.prototype.initBuffers = function()
+	sphere.prototype.initBuffers = function(isASun)
 	{
 		//il manque le code des normales à ajouter!
 		normals = [];
@@ -28,7 +29,8 @@ sphere.prototype = new worldObject;
 			for (var longi=0; longi <= tetaMax; longi+=pasLong)
             {
 				vertices = vertices.concat(pol2Cart(longi, lat));
-				normals = normals.concat(pol2Cart(longi, lat));
+				// Si c'est un soleil, on lui inverse ses normales
+				normals = normals.concat(pol2Cart(longi, lat, isASun));
 				textureCoords = textureCoords.concat([longi/tetaMax, (90+lat)/(90+phiMax)]);
 				if(longi != tetaMax)
 				{

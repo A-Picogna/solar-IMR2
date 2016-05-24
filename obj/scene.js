@@ -263,7 +263,7 @@ function drawScene()
     //////////////
     couleurLumiere=[0.9, 0.9, 0.9];
     couleurAmbiante=[0.1, 0.1, 0.2];
-    positionLumiere=[0.0, 0.0, 0.0];
+    positionLumiere=[0.0, 0.0, -10.0];
     // Envoi du paramêtre couleurAmbiante et couleurLumiere au shader
     gl.uniform3f(
         shaderProgram.ambientColorUniform, // Adresse récupéré dans initShader
