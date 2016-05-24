@@ -12,8 +12,8 @@ function worldObject(parent)
     this.toggled = true;
     this.vertexNormalBuffer = null;
     this.texture = null;
-    this.vitesseRevolution = 0.0001;
-    this.vitesseRotation = 0.001;
+    this.vitesseRevolution = 0;
+    this.vitesseRotation = 0;
     this.sensDeRotation = 1;
     mat4.identity(this.localTransformation);
     mat4.identity(this.revolutionTransformation);
@@ -104,6 +104,6 @@ worldObject.prototype.animate = function(elapsedTime)
     {
         this.children[i].animate(elapsedTime);
     }
-    this.orbite(this.vitesseRevolution * elapsedTime, [0, 1, 0]);
-    this.rotation(this.vitesseRotation * elapsedTime, [0, this.sensDeRotation, 0]);
+    this.orbite(this.vitesseRevolution , [0, 1, 0]);
+    this.rotation(this.vitesseRotation , [0, this.sensDeRotation, 0]);
 }
