@@ -15,14 +15,31 @@
 
 	varying vec2 vTextureCoord;
     // On récupère la variable de la lumière en ce point
-    varying vec3 vLightWeighting;
+	varying vec3 transformedNormal;
+	varying vec4 mvPosition;
+
+    uniform vec3 uAmbientColor;
+    uniform vec3 uLightLocation;
+    uniform vec3 uLightColor;
 
 	uniform sampler2D uSampler;
 
     void main(void)
 	{
+		vec3 vLightWeighting;
+
+		// On calcule la direction du rayon et on la normalise
+		vec3 lightDirection = normalize(uLightLocation - mvPosition.xyz);
+
+		// On calcule le rayon entre la normale et la direction de la lumière
+        float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);
+        // On multiplie le résultat avec la couleur et on ajouter la couleur ambiante
+        vLightWeighting = uAmbientColor + uLightColor * directionalLightWeighting;
+
+
 	    // On calcule la couleur de la texture
 		vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+
 		// Et on l'additionne avec notre couleur
 		gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
     }
@@ -33,25 +50,22 @@
     attribute vec3 aVertexNormal;
 	attribute vec2 aTextureCoord;
 
-    uniform vec3 uAmbientColor;
-
-    uniform vec3 uLightLocation;
-    uniform vec3 uLightColor;
-
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
     // On ajoute la matrice des normales
     uniform mat3 uNMatrix;
 
-    // Paramètre qui va etre renvoye au fragment : luminosité en un point
-    varying vec3 vLightWeighting;
 	// Coordonnées de la texture
 	varying vec2 vTextureCoord;
+	// Parametre qui va être renvoyé au fragment : la normale en un point
+	varying vec3 transformedNormal;
+	// Paramêtre renvoyé au fragment shader : la position du vertex
+	varying vec4 mvPosition;
 
     void main(void)
 	{
 		// Calcul de la position 3D du vertex
-		vec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+		mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
         // Calcul de la position 2D projetée du vertex
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 		// Calcul de la position de la texture
@@ -59,16 +73,8 @@
 
 		//////
 		// Calcul de la lumiere
-		/// On recupere la normale
-		vec3 transformedNormal = uNMatrix * aVertexNormal;
-		// On calcule la direction du rayon et on la normalise
-		vec3 lightDirection = normalize(uLightLocation - mvPosition.xyz);
-
-		// On calcule le rayon entre la normale et la direction de la lumière
-        float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);
-        // On multiplie le résultat avec la couleur et on ajouter la couleur ambiante
-        vLightWeighting = uAmbientColor + uLightColor * directionalLightWeighting;
-
+		/// On recupere la normale uniquement et on la renvoie au pixelShader
+		transformedNormal = uNMatrix * aVertexNormal;
     }
 </script>
 

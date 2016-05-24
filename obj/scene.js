@@ -263,6 +263,7 @@ function drawScene()
     //////////////
     couleurLumiere=[0.9, 0.9, 0.9];
     couleurAmbiante=[0.1, 0.1, 0.2];
+    //On veut que la lumière ne se déplace pas, donc on la fait dépendre du déplacement
     positionLumiere=[camX, 0.0, camZ-10.0];
 
     // Envoi du paramêtre couleurAmbiante et couleurLumiere au shader
