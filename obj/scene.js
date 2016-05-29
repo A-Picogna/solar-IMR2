@@ -39,8 +39,8 @@ function initWorldObjects()
     var terreTranslateValue = 20; // valeur de translation de la terre, valeur de référence
 
     planetesData = getJsonData("./obj/planetesData.json");
-    var refVitesseRevolution = 0.0001; // ce sera la vitesse de revolution de la terre en 365.36 jours, on calcule donc les autres vitesse proportionellement
-    var refVitesseRotation = 0.01 // ce sera la vitesse de rotation de la terre en 1 jour, on calcule le reste proportionnelement
+    var refVitesseRevolution = 0.02; // ce sera la vitesse de revolution de la terre en 365.36 jours, on calcule donc les autres vitesse proportionellement
+    var refVitesseRotation = 0.1 // ce sera la vitesse de rotation de la terre en 1 jour, on calcule le reste proportionnelement
 
     /* On admet que la vitesse de révolution et rotation sont indépendantes pour la démonstration
     dans l'idéal d'un modèle proportionnel, la vitesse de revolution devrait directement dépendre de la vitesse de rotation
